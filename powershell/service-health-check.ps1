@@ -34,3 +34,34 @@ function Get-ServiceHealth {
 }
 
 Get-ServiceHealth -Name $ServiceName
+
+
+<#
+NOTE ON PARAMETER NAMING & DESIGN
+
+Question:
+Why is the script-level parameter ($ServiceName) different from the
+function-level parameter ($Name)?
+
+Explanation:
+The script parameter and function parameter exist in different scopes.
+$ServiceName represents user input provided when the script is executed,
+while $Name is a local parameter used inside the function.
+
+The value of $ServiceName is explicitly passed to the function:
+Get-ServiceHealth -Name $ServiceName
+
+This design keeps the function self-contained and reusable. The function
+does not depend on external variables and can be independently called
+with any service name.
+
+Benefits:
+- Clear separation of responsibilities
+  * Script handles input
+  * Function handles logic
+- Improved reusability and testability
+- Avoids hidden dependencies on global or script-level variables
+- Aligns with PowerShell best practices for modular automation
+
+This approach ensures cleaner, maintainable, and enterprise-ready code.
+#>
