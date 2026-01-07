@@ -18,3 +18,5 @@ else:
 # - Python syntax familiarity
 # - Automation logic structure
 # - Preparing for real service checks and AI integration
+
+# f-string allows variable values to be embedded directly in the output string
