@@ -1,0 +1,10 @@
+Create a basic admin panel.
+
+Admin can:
+- View all tutor profiles
+- Approve or reject tutors
+- View tuition requests (read-only)
+
+No analytics.
+No charts.
+Admin access restricted.
