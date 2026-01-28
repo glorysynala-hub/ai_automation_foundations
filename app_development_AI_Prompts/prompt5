@@ -1,0 +1,13 @@
+Create the parent experience to find tutors.
+
+Requirements:
+- Search tutors by subject, class, and location
+- Show list of approved tutors only
+- Display basic tutor info:
+  name, subjects, experience, location
+
+No filters beyond this.
+No maps.
+No payments.
+
+Design the search page and results page.
