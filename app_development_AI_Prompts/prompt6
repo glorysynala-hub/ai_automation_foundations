@@ -1,0 +1,11 @@
+Add a "Request Tutor" feature.
+
+Flow:
+- Parent clicks "Request Tutor"
+- Simple form opens (subject, class, short message)
+- Request is saved in database
+- Tutor can see requests in their dashboard
+
+No in-app chat.
+No notifications.
+Show confirmation message to parent.
