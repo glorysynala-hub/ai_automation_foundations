@@ -1,0 +1,20 @@
+You are helping me build a simple MVP web app.
+
+App name: Home Tuition Connect
+
+Goal:
+Build a clean, easy-to-use web app that connects parents with home tutors.
+
+Constraints:
+- I am a non-technical founder
+- No custom code unless absolutely required
+- Keep everything simple and minimal
+- This is an MVP for validation, not a full product
+
+Tech stack:
+- Frontend: Lovable AI
+- Backend: Supabase
+- Web app only (mobile responsive)
+
+Do not add advanced features.
+Confirm understanding and outline the app structure before building.
