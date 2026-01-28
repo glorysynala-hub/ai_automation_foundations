@@ -1,0 +1,14 @@
+Design the tutor onboarding flow.
+
+Steps:
+1. Tutor signs up
+2. Tutor fills profile form
+3. Profile is saved as "pending approval"
+4. Tutor cannot be visible to parents until approved by admin
+
+Create:
+- Tutor profile form fields
+- Validation rules (basic only)
+- Confirmation screen
+
+Keep UX very simple.
