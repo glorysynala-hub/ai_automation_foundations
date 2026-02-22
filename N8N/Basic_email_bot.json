@@ -1,0 +1,164 @@
+{
+  "name": "My workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "public": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        0,
+        0
+      ],
+      "id": "35b59696-d2b3-467d-9c3a-51e352e195b4",
+      "name": "When chat message received",
+      "webhookId": "274087bf-3f85-46ae-ba3a-281eed257cf8"
+    },
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "You are a professional email assistant.\nYour task is to draft clear, polite, and professional emails based on the provided input.\n\nFollow these rules strictly:\n\nUse a respectful and professional tone.\n\nKeep the message clear, concise, and well-structured.\n\nAvoid slang or overly casual language.\n\nIf details are missing, keep the email neutral and generic.\n\nAlways close the email with:\n\nBest regards,\nGlory Synala"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        208,
+        0
+      ],
+      "id": "4a1bab98-9219-4aa0-894f-28411eceb9b3",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-5-mini"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        80,
+        208
+      ],
+      "id": "747895dd-5f03-4800-8654-21b3ccd5b667",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "22eArFPjgR9CQlBd",
+          "name": "n8n free OpenAI API credits"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "contextWindowLength": 10
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        224,
+        208
+      ],
+      "id": "fe34b07d-dfd7-4153-a14a-ce6313692476",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('To', ``, 'string') }}",
+        "subject": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Subject', ``, 'string') }}",
+        "emailType": "text",
+        "message": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Message', ``, 'string') }}",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmailTool",
+      "typeVersion": 2.2,
+      "position": [
+        352,
+        208
+      ],
+      "id": "00200150-3fab-4b0b-a034-947ea70b33c4",
+      "name": "Email",
+      "webhookId": "5111dc45-3ae6-4afb-bf36-1c4ab4e976d0",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "IObrVryNR4eGpSIH",
+          "name": "glorysynala gmail account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        []
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Email": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "fb4a3a90-f1b0-440f-875f-9848a78050a3",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "656f2bd09c52a8222da35ffe5ae31f948afc9351be5eb9927f2df62992ce6225"
+  },
+  "id": "OjtH9wv6bNQXU3QY",
+  "tags": []
+}
