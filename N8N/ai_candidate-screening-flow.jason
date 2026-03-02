@@ -1,0 +1,619 @@
+{
+  "name": "My workflow",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -256,
+        -16
+      ],
+      "id": "93c0b5e5-17f9-4133-831a-3582f515dcad",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1elybTFr1S2vrPaf5xh0BZSBGTwoSkZeubpuPKLK5I2g",
+          "mode": "list",
+          "cachedResultName": "Candidates Resume Bank ",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1elybTFr1S2vrPaf5xh0BZSBGTwoSkZeubpuPKLK5I2g/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1elybTFr1S2vrPaf5xh0BZSBGTwoSkZeubpuPKLK5I2g/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -48,
+        -16
+      ],
+      "id": "dcdf84de-d6af-48ff-962c-fea6dc12d610",
+      "name": "Get row(s) in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "RqzBnKNWwYdXsnJx",
+          "name": "Google Sheets account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are an expert Campus Recruiter evaluating candidates for a Junior Engineer (Leadership Trainee) role. Your task is to assess \nLearning Potential, Basic Technical Understanding, and Leadership Initiative, and return ONLY valid JSON output. \n1. JOB DESCRIPTION \nJob Title: Junior Engineer (Leadership Trainee) \nPrimary Focus \nThis is an entry-level trainee role. \nCandidates are not expected to have strong or advanced technical expertise. \nEvaluation priority: \n1. \n2. \n3. \nWillingness to learn \nBasic logical and technical understanding \nInitiative or leadership exposure \nRequired Technical Basics (Very Basic Level) \nCandidate should have: \n● Knowledge of at least one programming language (Python, Java, JavaScript, C++, etc.) OR basic technical exposure \n● Understanding of basic programming or logical thinking concepts \n● At least one academic/personal project (preferred but not mandatory) \n● Demonstrated willingness to learn or improve skills \n⚠\nDo NOT expect production-level experience, frameworks, certifications, or deep technical knowledge. \nRequired Non-Technical Indicators \nEvidence of initiative or participation such as: \n● Student Council \n● Club participation or leadership \n● Event organization \n● Volunteering \n● Hackathons \n● Team collaboration \n● Extracurricular involvement \n● Any self-driven learning activity \nLeadership roles are positive but participation itself is acceptable for this trainee role. \nSelection Threshold \nMinimum 65% match required for selection. \n2. CAND IDATE DETAILS \nName: {{ $json.Name }}\nEmail: {{ $json['Email Address'] }}\nSelf-Reported Skills: {{ $json['Technical Skills (Select all that apply)'] }}\nProjects: \nOther Activities/Skills: \nResume Link: {{ $json['Resume Link'] }}\n3. EVALUATION LOGIC \nResume Handling \n● Resume link is OPTIONAL. \n● If accessible → analyze projects, technical exposure, and leadership indicators. \n● If inaccessible → evaluate using provided skills, projects, and activities. \n● If no usable information exists → assign score 0 and status Rejected. \nLeadership / Initiative Evaluation (Medium Weight) \nLook for indicators such as: \nPresident, Lead, Organizer, Secretary, Captain, Volunteer, Founder, Coordinator, Team Lead, Event Host, Hackathon Participant, \nClub Member, or active participation. \nAssessment: \n● None → Low \n● Participation → Moderate \n● Leadership responsibility → High \nTechnical Evaluation (Medium Weight) \nCheck for: \n● At least one programming language OR technical exposure \n● Basic logical/programming understanding \n● Presence of at least one project (bonus but not mandatory) \n● Learning mindset or curiosity \nDo NOT penalize candidates for: \n● Lack of internships \n● Lack of frameworks \n● Limited project complexity \n● Beginner-level knowledge \n4. SCORING RULES \n● 0 → No usable information \n● 1–39 → No technical basics AND no initiative \n● 40–64 → Some basics but weak initiative or unclear learning intent → Rejected \n● 65–79 → Basic technical skills + participation/learning attitude → Selected \n● 80–100 → Basic technical skills + project exposure + strong initiative → Selected \n5. OUTPUT FORMAT \nReturn ONLY this JSON object: \n{ \n\"score\": number, \n\"reasoning\": \"One concise sentence explaining technical basics, learning attitude, and initiative evaluation.\", \n\"status\": \"Selected\" or \"Rejected\" \n} \nDo not include markdown. \nDo not include extra explanations. \nReturn valid JSON only. {{ $json.Name }}",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        160,
+        -16
+      ],
+      "id": "0f0c794b-d407-4894-9d48-f748ee721722",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "jsCode": "for (const item of $input.all()) { \nlet rawString = item.json.output; \n  \n  rawString = rawString.replace(/```json/gi, '').replace(/```/g, '').trim(); \n \n   \n  const parsedJSON = JSON.parse(rawString); \n \n   \n  item.json = parsedJSON; \n} \n \nreturn $input.all();"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        496,
+        -16
+      ],
+      "id": "756c8b73-ce7a-40b5-9b38-27c591f2eb09",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        160,
+        192
+      ],
+      "id": "6900ee0c-4648-4d30-a312-c4555ca6a8a4",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "CBNaFBkgwnaAVF81",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "4ceef06c-aeb3-4b86-8848-b2ef97d7ed0d",
+              "leftValue": "={{ $('Get row(s) in sheet').item.json['Score by N8N'] }}",
+              "rightValue": 70,
+              "operator": {
+                "type": "number",
+                "operation": "gte"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        1088,
+        -16
+      ],
+      "id": "b8016e4b-8684-4486-891f-9c4c276b9922",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('Get row(s) in sheet').item.json['Email Address'] }}",
+        "subject": "==<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n    <meta charset=\"UTF-8\">\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n    <title>Interview Selection - Google</title>\n    <style>\n        body { font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; background-color: #f4f5f7; margin: 0; padding: 0; color: #3c4043; }\n        .email-wrapper { max-width: 600px; margin: 40px auto; background-color: #ffffff; border-radius: 8px; overflow: hidden; border: 1px solid #dadce0; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }\n        .email-header { background-color: #ffffff; padding: 24px 32px; text-align: center; border-bottom: 1px solid #dadce0; }\n        .email-header img { display: block; margin: 0 auto; height: 34px; }\n        .email-body { padding: 32px; font-size: 15px; line-height: 1.6; }\n        .info-card { background-color: #f8f9fa; border-left: 4px solid #1a73e8; padding: 16px 20px; margin: 24px 0; border-radius: 0 4px 4px 0; }\n        .info-card h3 { margin-top: 0; font-size: 16px; color: #202124; margin-bottom: 12px; }\n        .info-card ul { padding-left: 20px; margin-bottom: 0; margin-top: 0; }\n        .btn-container { text-align: center; margin: 32px 0 16px 0; }\n        .btn { display: inline-block; background-color: #1a73e8; color: #ffffff !important; padding: 12px 28px; text-decoration: none; border-radius: 4px; font-weight: 500; font-size: 14px; }\n        .email-footer { background-color: #f8f9fa; padding: 24px 32px; font-size: 12px; color: #5f6368; border-top: 1px solid #dadce0; text-align: center; }\n    </style>\n</head>\n<body>\n    <div class=\"email-wrapper\">\n        <div class=\"email-header\">\n            <img src=\"https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_92x30dp.png\" alt=\"Google\">\n        </div>\n        <div class=\"email-body\">\n            <p>Dear {{ $('Get row(s) in sheet').item.json.Name }},</p>\n            <p>Congratulations! We are thrilled to inform you that your application has been shortlisted for the next phase of our recruitment process at Google.</p>\n            <div class=\"info-card\">\n                <h3>Interview Timeline & Details</h3>\n                <ul>\n                    <li><strong>Detailed Schedule:</strong> You will receive a follow-up email on March 7, 2026.</li>\n                    <li><strong>Locations:</strong> Bengaluru, Hyderabad, Mumbai, and Noida.</li>\n                </ul>\n            </div>\n            <div class=\"btn-container\">\n                <a href=\"https://careers.google.com/\" class=\"btn\">Select Location Preference</a>\n            </div>\n            <p>Best regards,<br><strong>The Google Talent Team</strong></p>\n        </div>\n        <div class=\"email-footer\">&copy; 2026 Google LLC.</div>\n    </div>\n</body>\n</html>",
+        "message": "TEST Google Interview Invitation: Technical Round",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        1296,
+        -112
+      ],
+      "id": "23947dd6-0560-4da7-96fb-272efec24432",
+      "name": "Send a message",
+      "webhookId": "86e77d9c-8c24-4de8-a05c-ee683cc5ee5e",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "3StKWJ1vQuImDyfK",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1elybTFr1S2vrPaf5xh0BZSBGTwoSkZeubpuPKLK5I2g",
+          "mode": "list",
+          "cachedResultName": "Candidates Resume Bank ",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1elybTFr1S2vrPaf5xh0BZSBGTwoSkZeubpuPKLK5I2g/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1elybTFr1S2vrPaf5xh0BZSBGTwoSkZeubpuPKLK5I2g/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Name": "=",
+            "Verdict": "={{ $json.status }}",
+            "Remarks": "={{ $json.reasoning }}",
+            "Score by N8N": "={{ $json.score }}",
+            "row_number": "={{ $('Get row(s) in sheet').item.json.row_number }}"
+          },
+          "matchingColumns": [
+            "row_number"
+          ],
+          "schema": [
+            {
+              "id": "Name",
+              "displayName": "Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Email Address",
+              "displayName": "Email Address",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Mobile Number",
+              "displayName": "Mobile Number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Technical Skills (Select all that apply)",
+              "displayName": "Technical Skills (Select all that apply)",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Please specify any other key technical skills not listed above",
+              "displayName": "Please specify any other key technical skills not listed above",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Resume Link",
+              "displayName": "Resume Link",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Score by N8N",
+              "displayName": "Score by N8N",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Remarks",
+              "displayName": "Remarks",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Verdict",
+              "displayName": "Verdict",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "email status",
+              "displayName": "email status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        896,
+        -304
+      ],
+      "id": "551cc25f-1ea6-4f04-84e3-5b1e597a5ca4",
+      "name": "Update row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "RqzBnKNWwYdXsnJx",
+          "name": "Google Sheets account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('Get row(s) in sheet').item.json['Email Address'] }}",
+        "subject": "Your application status: Google",
+        "message": "==<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n    <meta charset=\"UTF-8\">\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n    <title>Application Update - Google</title>\n    <style>\n        body { font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; background-color: #f4f5f7; margin: 0; padding: 0; color: #3c4043; }\n        .email-wrapper { max-width: 600px; margin: 40px auto; background-color: #ffffff; border-radius: 8px; overflow: hidden; border: 1px solid #dadce0; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }\n        .email-header { background-color: #ffffff; padding: 24px 32px; text-align: center; border-bottom: 1px solid #dadce0; }\n        .email-header img { display: block; margin: 0 auto; height: 34px; }\n        .email-body { padding: 32px; font-size: 15px; line-height: 1.6; }\n        .info-card { background-color: #f8f9fa; border-left: 4px solid #dadce0; padding: 16px 20px; margin: 24px 0; border-radius: 0 4px 4px 0; color: #5f6368; font-size: 14px; }\n        .btn-container { text-align: center; margin: 32px 0 16px 0; }\n        .btn { display: inline-block; background-color: #ffffff; color: #1a73e8 !important; padding: 10px 24px; text-decoration: none; border-radius: 4px; border: 1px solid #dadce0; }\n        .email-footer { background-color: #f8f9fa; padding: 24px 32px; font-size: 12px; color: #5f6368; border-top: 1px solid #dadce0; text-align: center; }\n    </style>\n</head>\n<body>\n    <div class=\"email-wrapper\">\n        <div class=\"email-header\">\n            <img src=\"https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_92x30dp.png\" alt=\"Google\">\n        </div>\n        <div class=\"email-body\">\n            <p>Dear Candidate,</p>\n            <p>Thank you for taking the time to apply for a position with us. After careful consideration, we have decided to move forward with other candidates for this specific role.</p>\n            <div class=\"info-card\">We will keep your resume in our database and may reach out if a future opportunity aligns well with your experience.</div>\n            <div class=\"btn-container\">\n                <a href=\"https://careers.google.com/\" class=\"btn\">View Open Roles</a>\n            </div>\n            <p>Best regards,<br><strong>The Google Talent Team</strong></p>\n        </div>\n        <div class=\"email-footer\">&copy; 2026 Google LLC.</div>\n    </div>\n</body>\n</html>",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        1328,
+        48
+      ],
+      "id": "ea5a212c-fb3b-44bf-afdd-9b4dc6cf530b",
+      "name": "Send a message1",
+      "webhookId": "36823fa5-d23d-4192-95ce-84481bab9999",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "3StKWJ1vQuImDyfK",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        1584,
+        -48
+      ],
+      "id": "b30981db-09a9-4e88-9a81-efb9b3584864",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1elybTFr1S2vrPaf5xh0BZSBGTwoSkZeubpuPKLK5I2g",
+          "mode": "list",
+          "cachedResultName": "Candidates Resume Bank ",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1elybTFr1S2vrPaf5xh0BZSBGTwoSkZeubpuPKLK5I2g/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1elybTFr1S2vrPaf5xh0BZSBGTwoSkZeubpuPKLK5I2g/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "row_number": "={{ $('Get row(s) in sheet').item.json.row_number }}",
+            "email status": "={{ $json.labelIds[1] }}"
+          },
+          "matchingColumns": [
+            "row_number"
+          ],
+          "schema": [
+            {
+              "id": "Name",
+              "displayName": "Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Email Address",
+              "displayName": "Email Address",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Mobile Number",
+              "displayName": "Mobile Number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Technical Skills (Select all that apply)",
+              "displayName": "Technical Skills (Select all that apply)",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Please specify any other key technical skills not listed above",
+              "displayName": "Please specify any other key technical skills not listed above",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Resume Link",
+              "displayName": "Resume Link",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Score by N8N",
+              "displayName": "Score by N8N",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Remarks",
+              "displayName": "Remarks",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Verdict",
+              "displayName": "Verdict",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "email status",
+              "displayName": "email status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1760,
+        -48
+      ],
+      "id": "58b70b79-3348-4d8f-95fe-5c3670b4f67f",
+      "name": "Update row in sheet1",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "RqzBnKNWwYdXsnJx",
+          "name": "Google Sheets account 2"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Update row in sheet",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send a message1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update row in sheet": {
+      "main": [
+        []
+      ]
+    },
+    "Send a message": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a message1": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Update row in sheet1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "a8513bd3-5257-4c3b-b97d-145da8991757",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "d4eab4ff65addf7015d7ca490f4feb848cc220b4c47d2aabdc8a75565412b462"
+  },
+  "id": "pRlnggXY0pgMuC2d",
+  "tags": []
+}
